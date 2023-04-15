@@ -1,8 +1,10 @@
 const express=require('express');
 const expressHandlebars=require('express-handlebars');
-const fortune=require('./lib/fortune.js');
 const app = express();
 const port=process.env.port || 3000;
+
+const fortune=require('./lib/fortune.js');
+const handlers=require('./lib/handlers.js');
 
 app.engine('handlebars', expressHandlebars.engine());
 app.set('view engine','handlebars');
@@ -10,28 +12,21 @@ app.set('views','./views');
 
 app.use(express.static(__dirname+'/public'));
 
-app.get('/',(req,res)=>{
-    res.render('home');
-});
+app.get('/',handlers.home);
 
-app.get('/about',(req,res)=>{
-    res.render('about',{fortune:fortune.getFourtune});
-})
+app.get('/about',handlers.about)
 
 //cusotm 404 pages
-app.use((req,res)=>{
-    res.status(404);
-    res.render('404');
-});
+app.use(handlers.notFound);
 
 //custom 500 page
-app.use((err,req,res,next)=>{
-    console.error(err.message);
-    res.status(500);
-    res.send('500');
-});
+app.use(handlers.serverError);
 
 
-app.listen(port,()=>{
-    console.log(`express started on port ${port}`)
-})
+if(require.main===module){
+    app.listen(port,()=>{
+        console.log(`express started on port ${port}`)
+    })
+}else{
+    module.exports=app;
+}
