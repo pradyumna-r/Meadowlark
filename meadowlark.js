@@ -13,6 +13,7 @@ app.use(express.static(__dirname + "/public"));
 
 app.get("/", handlers.home);
 
+//about page
 app.get("/about", handlers.about);
 
 //cusotm 404 pages
